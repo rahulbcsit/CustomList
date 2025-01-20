@@ -1,0 +1,66 @@
+# Ignore build and packaging outputs
+bin/
+obj/
+out/
+
+# User-specific files
+*.user
+*.vs/
+.vscode/
+
+# MacOS-specific files
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Visual Studio Code workspace settings
+.vscode/
+
+# Rider project settings
+.idea/
+
+# Resharper files
+_ReSharper*/  
+*.sln.docstates
+
+# Logs
+*.log
+*.tlog
+
+# Backup and temporary files
+*.bak
+*.swp
+*.tmp
+~$*
+
+# NuGet Packages
+*.nupkg
+packages/
+.nuget/
+
+# DotNet tools
+.dotnet/
+.dotnet_tool/
+
+# Coverage and analysis
+coverage/
+*.coverage
+*.coveragexml
+*.testResults
+TestResults/
+
+# Crash Reports
+crash.dmp
+error.log
+
+# Publish output
+.publish/
+
+# Local environment files
+.env
+.env.local
+.env.*.local
+
+# Global Assembly Info
+AssemblyInfo.cs
+
