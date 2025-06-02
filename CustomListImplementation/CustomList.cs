@@ -1,17 +1,21 @@
 
-using System.Collections; 
+using System.Collections;
+using System.Threading.Tasks;
+using System.Collections.Generic;
 
-public interface ICustomList<T> : IEnumerable<T>
+public interface ICustomList<T> : IAsyncEnumerable<T>
 {
-      void Add(T item);
-      bool Remove(T item);
+      Task AddAsync(T item);
+      Task<bool> RemoveAsync(T item);
 
-      void RemoveAt(int item);
+      Task RemoveAtAsync(int index);
 
-      T this[int index] {get; set;}
+      Task<T> GetAsync(int index);
+      Task SetAsync(int index, T value);
 
-      int Count {get;} 
-} 
+      // GetAsyncEnumerator is inherited from IAsyncEnumerable<T>
+      int Count {get;}
+}
 
 public class CustomList<T> : ICustomList<T>
 {
@@ -24,26 +28,37 @@ public class CustomList<T> : ICustomList<T>
 
       public int Count => _items.Count;
 
-      public T this[int index]
+      public Task<T> GetAsync(int index)
       {
-            get { return _items[index];}
-            set 
+            if (index < 0 || index >= _items.Count)
             {
-                  _items[index] = value;
-            } 
+                  throw new ArgumentOutOfRangeException(nameof(index), $"{index} is out of range");
+            }
+            return Task.FromResult(_items[index]);
       }
 
-      public void Add(T item)
+      public Task SetAsync(int index, T value)
+      {
+            if (index < 0 || index >= _items.Count)
+            {
+                  throw new ArgumentOutOfRangeException(nameof(index), $"{index} is out of range");
+            }
+            _items[index] = value;
+            return Task.CompletedTask;
+      }
+
+      public Task AddAsync(T item)
       {
             _items.Add(item);
+            return Task.CompletedTask;
       }
 
-      public bool Remove(T item)
+      public Task<bool> RemoveAsync(T item)
       {
-            return _items.Remove(item);
+            return Task.FromResult(_items.Remove(item));
       }
 
-      public void RemoveAt(int index)
+      public Task RemoveAtAsync(int index)
       {
             if (index < 0 || index >= _items.Count)
             {
@@ -51,15 +66,16 @@ public class CustomList<T> : ICustomList<T>
             }
 
             _items.RemoveAt(index);
+            return Task.CompletedTask;
       }
       
-      public IEnumerator<T> GetEnumerator()
+      public async IAsyncEnumerator<T> GetAsyncEnumerator(System.Threading.CancellationToken cancellationToken = default)
       {
-             foreach (var item in _items)
-             {
-                  yield return item;
-             }
+          foreach (var item in _items)
+          {
+              await Task.Yield();
+              cancellationToken.ThrowIfCancellationRequested();
+              yield return item;
+          }
       }
-
-      IEnumerator IEnumerable.GetEnumerator() => GetEnumerator(); 
 }
